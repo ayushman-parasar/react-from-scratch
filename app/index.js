@@ -43,9 +43,27 @@ function createElement(type, props, ...children) {
   }
 }
 
+function render(element, container) {
+  const dom =
+    element.type == "TEXT_ELEMENT"
+      ? document.createTextNode("")
+      : document.createElement(element.type)
+  const isProperty = key => key !== "children" 
+  Object.keys(element.props)
+    .filter(isProperty)
+    .forEach(name => {
+      dom[name] = element.props[name]
+    })
+  element.props.children.forEach(child =>
+    render(child, dom)
+  )
+  container.appendChild(dom)
+}
+
 
 const reactLib = {
     createElement,
+    render,
 }
 
 /** @jsx Didact.createElement */
@@ -56,4 +74,4 @@ const element = (
     </div>)
 
 const container = document.getElementById("root")
-ReactDOM.render(element, container)
+reactLib.render(element, container)
